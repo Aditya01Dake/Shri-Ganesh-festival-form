@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="mr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title> Photo Prompt Gallery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #6C63FF;
+            --secondary: #4A44C6;
+            --accent: #FF6584;
+            --light: #F5F5F7;
+            --dark: #2D2D3A;
+            --success: #4CAF50;
+        }
+
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--dark);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            text-shadow: 1px 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .prompts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .prompt-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .prompt-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .prompt-header {
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            color: white;
+            padding: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .prompt-number {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .copy-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .copy-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .prompt-content {
+            padding: 1.5rem;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .prompt-text {
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            line-height: 1.5;
+            flex-grow: 1;
+        }
+
+        .prompt-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .tag {
+            background: var(--light);
+            padding: 0.3rem 0.7rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            color: var(--secondary);
+        }
+
+        footer {
+            text-align: center;
+            padding: 2rem 1rem;
+            margin-top: 3rem;
+            background: var(--dark);
+            color: white;
+        }
+
+        .notification {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--success);
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .prompts-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Photo Prompt Gallery</h1>
+        <p class="subtitle">A collection of inspiring prompts for creative photography. Use the copy button to copy any prompt.</p>
+    </header>
+
+    <div class="container">
+        <div class="prompts-grid" id="promptsContainer">
+            <!-- Prompts will be inserted here by JavaScript -->
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Photo Prompt Gallery</p>
+    </footer>
+
+    <div class="notification" id="notification">Prompt copied to clipboard.!</div>
+
+    <script>
+        // Sample prompts data
+        const prompts = [
+            {
+                id: 001,
+                text: "A regal Indian groom stands elegantly, adorned in a traditional ivory sherwani with intricate red and gold embroidery. He wears a matching red turban and a long red stole draped over his shoulders. His attire is complemented by deep red churidar pants and traditional golden footwear. The groom stands confidently with his hands clasped, exuding grace and sophistication. In the background, there's a hint of traditional Indian architecture and lush greenery with white and pink flowers, creating a serene and celebratory atmosphere. The lighting is soft and natural, highlighting the rich textures and colors of his outfit.",
+                tags: ["Groom", "Indian Marriage", ""]
+            },
+            
+            {
+                id: 002,
+                text: "A portrait of a young Indian man in a light blue casual shirt, smiling gently at the camera. He is standing outdoors in a rural or farmland setting, with blurred green fields and muddy ground/water visible in the background. The lighting is bright and natural, giving the image a soft, slightly rustic feel. The photo has a casual, candid, and slightly dreamy aesthetic.",
+                tags:[ "natural", "Indian farm"
+                ]
+            },
+            {
+                id: 4,
+                text: "A stylish young man stands confidently in the middle of a street, looking towards his right with a thoughtful expression. He has a trendy haircut with voluminous, styled hair and a well-groomed beard. He is wearing a dark blue long-sleeved shirt, black fitted trousers, and dark blue casual shoes. A watch is visible on his left wrist and he has tattoos on his arms. His hands are clasped loosely in front of him. In the background, there's a blurred urban street scene with yellow barricades, trees, and other vehicles, suggesting a city environment. The lighting is bright and clear, highlighting his modern attire and cool demeanor.",
+                tags: ["stylish", "looking", "hair"]
+            },
+            {
+                id: 5,
+                text: "A pretty young woman with long, curly dark hair stands gracefully under a tree in a sunlit park, looking towards the camera with a gentle expression. She is wearing a sleeveless gray midi dress with a matching light gray cardigan draped over her arms. Her left hand is raised to her hair, and her right arm is gently bent. She completes her casual look with dark, slip-on shoes. The background features blurred yellow and green foliage, indicating an autumn setting, with soft natural light enhancing the serene atmosphere.",
+                tags: ["pretty young woman with long", ]
+            },
+            
+        ];
+
+        // Function to render prompts
+        function renderPrompts() {
+            const container = document.getElementById('promptsContainer');
+            
+            prompts.forEach(prompt => {
+                const promptCard = document.createElement('div');
+                promptCard.className = 'prompt-card';
+                
+                promptCard.innerHTML = `
+                    <div class="prompt-header">
+                        <div class="prompt-number">prompts  #${prompt.id}</div>
+                        <button class="copy-btn" data-id="${prompt.id}">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                <path d="M4 1.5H3a2 2 0 0 0-2 2V14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V3.5a2 2 0 0 0-2-2h-1v1h1a1 1 0 0 1 1 1V14a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V3.5a1 1 0 0 1 1-1h1v-1z"/>
+                                <path d="M9.5 1a.5.5 0 0 1 .5.5v1a.5.5 0 0 1-.5.5h-3a.5.5 0 0 1-.5-.5v-1a.5.5 0 0 1 .5-.5h3zm-3-1A1.5 1.5 0 0 0 5 1.5v1A1.5 1.5 0 0 0 6.5 4h3A1.5 1.5 0 0 0 11 2.5v-1A1.5 1.5 0 0 0 9.5 0h-3z"/>
+                            </svg>
+                            कॉपी करा
+                        </button>
+                    </div>
+                    <div class="prompt-content">
+                        <div class="prompt-text">${prompt.text}</div>
+                        <div class="prompt-tags">
+                            ${prompt.tags.map(tag => `<span class="tag">${tag}</span>`).join('')}
+                        </div>
+                    </div>
+                `;
+                
+                container.appendChild(promptCard);
+            });
+            
+            // Add event listeners to copy buttons
+            document.querySelectorAll('.copy-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const promptId = this.getAttribute('data-id');
+                    const prompt = prompts.find(p => p.id == promptId);
+                    copyToClipboard(prompt.text);
+                    showNotification();
+                });
+            });
+        }
+
+        // Function to copy text to clipboard
+        function copyToClipboard(text) {
+            const textarea = document.createElement('textarea');
+            textarea.value = text;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+        }
+
+        // Function to show notification
+        function showNotification() {
+            const notification = document.getElementById('notification');
+            notification.classList.add('show');
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+            }, 3000);
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', renderPrompts);
+    </script>
+</body>
+</html>
